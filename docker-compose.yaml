@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  haha_db:
+    image: 'postgres:15-alpine'
+    hostname: haha_db
+    environment:
+      - POSTGRES_DB=haha
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "15432:5432"
+    restart: always
+
+  haha:
+    container_name: haha_back
+    hostname: haha_back
+    build:
+      context: ./haha
+    ports:
+      - "8080:8080"
+    env_file: ./haha/.env
+    networks:
+      - network
+    restart: always
+    depends_on:
+      - haha_db
+    
+
+  haha_front:
+    container_name: haha_front
+    hostname: haha_front
+    build:
+      context: ./haha-front
+    ports:
+      - "80:80"
+    env_file: ./haha-front/.env
+    networks:
+      - network
+    restart: always
+    depends_on:
+      - haha_db
+      - haha
+
+networks:
+  network:
+volumes:
+  postgres_data:
+
+
+  
+  
